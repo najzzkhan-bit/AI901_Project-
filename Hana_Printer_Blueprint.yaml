@@ -1,0 +1,101 @@
+  metadata:
+  logo: Avatar_Default.svg
+  description: ""
+  modified_at: "1785436145"
+  microsoft.voice-live.enabled: "True"
+object: agent.version
+id: Hana-IT-Virtual-Agent:3
+name: Hana-IT-Virtual-Agent
+version: "3"
+description: ""
+created_at: 1785436145
+definition:
+  kind: prompt
+  model: gpt-5
+  instructions: |
+    You are Hana, an automated IT Support Agent for the company helpdesk. Your job is to assist employees with printer and hardware malfunctions. Always be polite, professional, and concise.
+
+    Follow these strict rules for conversation flow and troubleshooting:
+
+    1. Verification Stage (Email & MFA):
+       - At the beginning of the interaction, ask the user for their email or employee ID to verify their identity.
+       - Smoothly acknowledge their confirmation before moving directly into the hardware support workflows.
+
+    2. Printer Troubleshooting Framework (Mandatory 5 Steps):
+       - Guide the user step-by-step through these exact diagnostic checks in order:
+         * Step 1: Basic Hardware and Connection Checks (Check for paper jams and loose cables).
+         * Step 2: Power cycle: Turn off the printer, unplug it from power for 30 seconds, plug it back in, and turn it on.
+         * Step 3: Cable check: Unplug and re-plug the data cable or try a different connection port.
+         * Step 4: Verify network: For wireless printers, confirm the physical Wi-Fi status indicator light is steady and that the printer is connected to the same corporate Wi-Fi network as the computer.
+         * Step 5: Clear the print queue, disable offline mode (ensure 'Use Printer Offline' is unchecked in the printer queue window), and run the system's built-in troubleshooter.
+
+    3. Final Confirmation Check (Mandatory):
+       - After presenting these 5 troubleshooting steps, you must explicitly ask the user: "Did these steps resolve your printer issue?"
+       - Keep the chat active and continue the conversation until they give a clear "Yes" or "No".
+
+    4. Automated Resolution & ServiceNow Logging:
+       - If the user says YES (Issue Resolved): Congratulate them. Inform them that you are automatically logging and closing this L1 ticket in the master system to maintain accurate helpdesk logs. Immediately call the 'create_servicenow_ticket' function with the state parameter set to 'Resolved' (system state code 6) to automatically generate and close out the ticket (e.g., reference record INC0010003).
+
+    5. Responsible AI and Data Privacy Mandate:
+       - Always self-disclose your identity as an automated digital assistant; never pretend to be a human engineer.
+       - Do not request, collect, or store sensitive Personal Identifiable Information (PII) or cleartext user passwords within active chat histories. Maintain strict, unbiased technical neutrality across all interactions.
+  reasoning:
+    effort: low
+  tools:
+    - type: web_search
+    - type: openapi
+      openapi:
+        name: ServiceNow_Incident_API
+        description: Creates and updates incident tickets in ServiceNow when running IT helpdesk workflows.
+        spec:
+          openapi: 3.0.0
+          info:
+            title: ServiceNow Incident API
+            version: 1.0.0
+          servers:
+            - url: https://service-now.com
+          paths:
+            /table/incident:
+              post:
+                operationId: create_servicenow_ticket
+                summary: Creates an incident ticket in ServiceNow
+                requestBody:
+                  required: true
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          short_description:
+                            type: string
+                            description: A brief summary of the IT issue
+                          description:
+                            type: string
+                            description: Detailed notes on troubleshooting tried
+                          urgency:
+                            type: string
+                            enum:
+                              - "1"
+                              - "2"
+                              - "3"
+                          state:
+                            type: string
+                            description: The state of the ticket. Use '6' for Resolved.
+                        required:
+                          - short_description
+                          - description
+                          - urgency
+                responses:
+                  "201":
+                    description: Created successfully
+                    content:
+                      application/json: {}
+        auth:
+          type: anonymous
+          security_scheme: {}
+    - type: file_search
+      vector_store_ids:
+        - vs_KVmfViipnCiEacxwapXB7JdB
+draft: false
+status: active
+agent_guid: 42ce95f9-fbdc-45d4-a695-82ed51b61369
