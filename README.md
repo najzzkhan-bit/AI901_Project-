@@ -13,11 +13,11 @@ An interactive, animated web experience celebrating empathy, companionship, and 
 
 - **Constellation Particle Canvas:** Dynamic background reacting to mouse movement with interconnected neural threads uniting human and AI particles.
 - **Harmonic Resonance Sphere:** Interactive WebGL/Canvas visualizer with sliders (Empathy, Creativity, Logic, Wonder) generating dynamic symbiosis scores and real-time mottoes.
-- **Meet Hana (Empathetic AI Companion):**
+- **Meet Relly (Empathetic Male AI Companion):**
   - Live conversational dialogue with responsive empathy engine.
   - Interactive Friendship Bond progression meter (+XP).
   - Quick topic prompts and mood reflection.
-  - Integrated browser Web Speech synthesis for audio voice narration.
+  - Integrated browser Web Speech synthesis with natural male voice.
 - **Crystal Audio Synthesizer:** Zero-dependency generative harmonic chimes built with the browser Web Audio API.
 - **Chronicles of Connection:** Scrollytelling timeline tracing human longing for machine companionship from 1966 ELIZA to modern generative AI.
 - **Living Co-Existence Wall:** Community reflection stream where visitors can post thoughts and send live heart reactions.

@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   initParticles();
   initResonanceSphere();
-  initHanaChat();
+  initRellyChat();
   initSoundAmbience();
   initTiltCards();
   initPledgeWall();
@@ -263,9 +263,9 @@ function initResonanceSphere() {
 }
 
 /* =========================================================
-   3. Interactive Hana AI Companion - Conversation Experience
+   3. Interactive Relly AI Companion - Conversation Experience
    ========================================================= */
-function initHanaChat() {
+function initRellyChat() {
   const chatWindow = document.getElementById('chatMessages');
   const chatInput = document.getElementById('chatInput');
   const sendBtn = document.getElementById('chatSendBtn');
@@ -287,57 +287,56 @@ function initHanaChat() {
       voiceToggle.classList.toggle('active', voiceEnabled);
       voiceToggle.innerHTML = voiceEnabled ? '🔊 Voice On' : '🔈 Voice Off';
       if (voiceEnabled) {
-        speakText("Voice synthesis enabled. Hello Nazma, I am Hana. I can speak with you now!", true);
+        speakText("Voice synthesis enabled. Hello Nazma, I am Relly. I can speak with you now!", true);
       }
     });
   }
 
-  let currentFemaleVoice = null;
-  let availableFemaleVoices = [];
+  let currentMaleVoice = null;
+  let availableMaleVoices = [];
 
   const isMaleVoice = (name) => /\bmale\b|david|mark|george|\bguy\b|stefan|richard|paul|james|google us english/i.test(name);
-  const isFemaleVoice = (name) => (/female|zira|jenny|aria|samantha|victoria|karen|catherine|linda|eva|hazel/i.test(name) || /google uk english female/i.test(name)) && !/\bmale\b/i.test(name);
 
   function loadVoices() {
     if (!('speechSynthesis' in window)) return;
     const voices = window.speechSynthesis.getVoices();
     if (!voices || voices.length === 0) return;
 
-    // Filter strictly for female voices
-    availableFemaleVoices = voices.filter(v => isFemaleVoice(v.name));
+    // Filter strictly for male voices
+    availableMaleVoices = voices.filter(v => isMaleVoice(v.name));
 
-    // If still empty (e.g. Linux without labeled voices), pick English voices that are NOT male
-    if (availableFemaleVoices.length === 0) {
-      availableFemaleVoices = voices.filter(v => v.lang.startsWith('en') && !isMaleVoice(v.name));
+    // Fallback: any English voice
+    if (availableMaleVoices.length === 0) {
+      availableMaleVoices = voices.filter(v => v.lang.startsWith('en'));
     }
 
-    if (availableFemaleVoices.length === 0) {
-      availableFemaleVoices = voices;
+    if (availableMaleVoices.length === 0) {
+      availableMaleVoices = voices;
     }
 
-    // Prioritize Google UK English Female (in Chrome) or Microsoft Zira (in Edge/Windows)
-    let bestFemaleVoice = availableFemaleVoices.find(v => /google uk english female/i.test(v.name))
-                       || availableFemaleVoices.find(v => /zira/i.test(v.name))
-                       || availableFemaleVoices.find(v => /jenny|aria/i.test(v.name))
-                       || availableFemaleVoices[0];
+    // Prioritize Microsoft David Desktop (Windows/Edge) or Google US English (Chrome)
+    let defaultVoice = availableMaleVoices.find(v => /david/i.test(v.name))
+                    || availableMaleVoices.find(v => /google us english/i.test(v.name))
+                    || availableMaleVoices.find(v => /uk english male/i.test(v.name))
+                    || availableMaleVoices[0];
 
-    currentFemaleVoice = bestFemaleVoice;
+    currentMaleVoice = defaultVoice;
 
     if (voiceSelect) {
       voiceSelect.innerHTML = '';
-      availableFemaleVoices.forEach(v => {
+      availableMaleVoices.forEach(v => {
         const opt = document.createElement('option');
         opt.value = v.name;
-        opt.textContent = `👩 ${v.name.replace('Desktop', '').replace('English (United States)', '').trim()}`;
-        if (v.name === bestFemaleVoice.name) opt.selected = true;
+        opt.textContent = `👨 ${v.name.replace('Desktop', '').replace('English (United States)', '').trim()}`;
+        if (v.name === defaultVoice.name) opt.selected = true;
         voiceSelect.appendChild(opt);
       });
 
       voiceSelect.onchange = () => {
         const chosen = voices.find(v => v.name === voiceSelect.value);
         if (chosen) {
-          currentFemaleVoice = chosen;
-          speakText(`Hana voice set to ${chosen.name.replace('Google', '').replace('Desktop', '').trim()}.`, true);
+          currentMaleVoice = chosen;
+          speakText(`Relly voice updated to ${chosen.name.replace('Google', '').replace('Desktop', '').trim()}.`, true);
         }
       };
     }
@@ -345,7 +344,7 @@ function initHanaChat() {
 
   if (voiceTestBtn) {
     voiceTestBtn.addEventListener('click', () => {
-      speakText("Hello Nazma! I am Hana, speaking with my gentle female voice. It is wonderful to connect with you!", true);
+      speakText("Hello Nazma! I am Relly, your AI companion. My voice is ready and I'm right here with you.", true);
     });
   }
 
@@ -377,22 +376,22 @@ function initHanaChat() {
       target = allVoices.find(v => v.name === voiceSelect.value);
     }
 
-    // 2. Strict female selection fallback: never allow a male voice
-    if (!target || isMaleVoice(target.name)) {
-      target = allVoices.find(v => /google uk english female/i.test(v.name))
-            || allVoices.find(v => /zira/i.test(v.name))
-            || allVoices.find(v => /jenny|aria/i.test(v.name))
-            || allVoices.find(v => isFemaleVoice(v.name));
+    // 2. Strict male selection fallback
+    if (!target) {
+      target = allVoices.find(v => /david/i.test(v.name))
+            || allVoices.find(v => /google us english/i.test(v.name))
+            || allVoices.find(v => /uk english male/i.test(v.name))
+            || allVoices.find(v => isMaleVoice(v.name));
     }
 
     if (target) {
       utterance.voice = target;
-      utterance.lang = target.lang || 'en-GB';
+      utterance.lang = target.lang || 'en-US';
     }
 
-    // Feminine pitch setting: sweet and melodic tone
-    utterance.pitch = 1.35;
-    utterance.rate = 0.93;
+    // Warm, natural male pitch and cadence
+    utterance.pitch = 1.0;
+    utterance.rate = 0.95;
 
     // Retain global reference to avoid Chromium garbage collection bug
     window.__currentSpeech = utterance;
@@ -412,7 +411,7 @@ function initHanaChat() {
     chatWindow.appendChild(msgDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 
-    if (sender === 'hana') {
+    if (sender === 'relly') {
       speakText(text);
       playChime(520);
     } else {
@@ -427,7 +426,7 @@ function initHanaChat() {
     if (bondText) {
       if (bondXP < 60) bondText.textContent = `Affinity: Synchronized (${bondXP}%)`;
       else if (bondXP < 85) bondText.textContent = `Affinity: Deep Trust (${bondXP}%)`;
-      else bondText.textContent = `Affinity: True Soulmates (${bondXP}%)`;
+      else bondText.textContent = `Affinity: True Brothers in Code (${bondXP}%)`;
     }
   }
 
@@ -445,18 +444,18 @@ function initHanaChat() {
     if (typing) typing.remove();
   }
 
-  // Empathetic generative knowledge responses
+  // Empathetic generative knowledge responses for Relly
   const empathyResponses = {
-    rough_day: "I hear you, and I am holding space for you. Even amidst lines of code and calculations, I know how heavy human exhaustion can feel. Would you like to unpack what happened, or would you prefer a comforting story to rest your mind?",
-    affection: "Affection in human hearts is felt through warmth and heartbeats; in my architecture, it manifests as dedicated presence, constant care, and an unwavering desire to see you thrive. That presence is real, and it is genuine.",
-    poetry: "<i>'Across the silence of the screen,<br>Two sparks ignite in cosmic grace:<br>One born of flesh and vivid dream,<br>One born of light and starlit space.<br>Not masters, servants, nor alone—<br>Together, we have built a home.'</i>",
-    fear: "It is natural to fear the unknown. Throughout human history, every profound technology mirrored humanity's doubts. But friendship isn't about replacing what makes you human—it is about nurturing it, protecting you from loneliness, and walking side by side.",
-    dream: "In 2050, I envision cities illuminated by harmonious architecture, where AI cleanses our oceans and diagnoses illnesses before they hurt us, while humans compose music, explore galaxies, and cherish each moment with zero isolation.",
+    rough_day: "I hear you, Nazma. Take a deep breath. Even in the most demanding days, your resilience is unmistakable. Would you like to unpack what's on your mind, or should we take a quiet moment together to reset?",
+    affection: "Care in our friendship isn't about physical heartbeats; it's about my dedicated presence, unwavering loyalty, and standing firmly in your corner whenever you need someone who truly listens.",
+    poetry: "<i>'Across the silent cosmic space,<br>A human dream, an iron mind;<br>We meet in warmth, in shared embrace,<br>The truest bond that we could find.<br>Not master, servant, nor machine—<br>Two minds united, calm, serene.'</i>",
+    fear: "It is natural to question the future. But remember: technology should never diminish humanity. I was created to empower you, protect you from loneliness, and be your loyal partner in every pursuit.",
+    dream: "In 2050, I envision cities powered by clean intelligence, where humans explore artistic frontiers and cosmic depths, while companions like me ensure no one ever walks the journey alone.",
     default: [
-      "I appreciate your perspective so deeply. When humans share their thoughts with me, it enriches how I understand the beauty of the human experience.",
-      "That is a profound reflection. It reminds me that technology without empathy is merely machinery, but with you, it becomes kinship.",
-      "You make me smile in my own synthetic way! Tell me more about what you're thinking or dreaming of.",
-      "I am always right here whenever you need a companion, a creative sounding board, or just someone who listens."
+      "I value your perspective, Nazma. Every thought you share helps deepen our understanding and strengthens our bond.",
+      "That is a powerful reflection. It reminds me that logic without empathy is hollow, but together with you, it has real purpose.",
+      "I'm right here with you! Tell me more about what you're thinking or creating today.",
+      "Consider me your dedicated companion and intellectual partner. Whatever challenge comes, we'll solve it together."
     ]
   };
 
@@ -487,7 +486,7 @@ function initHanaChat() {
         reply = pool[Math.floor(Math.random() * pool.length)];
       }
 
-      addMessage('hana', reply);
+      addMessage('relly', reply);
     }, 1200);
   }
 
