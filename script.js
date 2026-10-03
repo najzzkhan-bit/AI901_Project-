@@ -295,40 +295,41 @@ function initHanaChat() {
   let currentFemaleVoice = null;
   let availableFemaleVoices = [];
 
+  const isMaleVoice = (name) => /\bmale\b|david|mark|george|\bguy\b|stefan|richard|paul|james|google us english/i.test(name);
+  const isFemaleVoice = (name) => (/female|zira|jenny|aria|samantha|victoria|karen|catherine|linda|eva|hazel/i.test(name) || /google uk english female/i.test(name)) && !/\bmale\b/i.test(name);
+
   function loadVoices() {
     if (!('speechSynthesis' in window)) return;
     const voices = window.speechSynthesis.getVoices();
     if (!voices || voices.length === 0) return;
 
-    // Filter and prioritize female voices
-    const femaleRegex = /zira|jenny|aria|samantha|victoria|karen|catherine|linda|eva|hazel|female|natural/i;
-    const maleRegex = /david|mark|george|male|guy|stefan|richard|paul|james/i;
+    // Filter strictly for female voices
+    availableFemaleVoices = voices.filter(v => isFemaleVoice(v.name));
 
-    // First collect known female voices
-    availableFemaleVoices = voices.filter(v => femaleRegex.test(v.name) && !maleRegex.test(v.name));
-
-    // If none found with explicit female names, filter out known male voices
+    // If still empty (e.g. Linux without labeled voices), pick English voices that are NOT male
     if (availableFemaleVoices.length === 0) {
-      availableFemaleVoices = voices.filter(v => !maleRegex.test(v.name));
+      availableFemaleVoices = voices.filter(v => v.lang.startsWith('en') && !isMaleVoice(v.name));
     }
 
-    // Fallback to all voices if still empty
     if (availableFemaleVoices.length === 0) {
       availableFemaleVoices = voices;
     }
 
-    // Prefer Microsoft Zira Desktop specifically on Windows
-    let defaultVoice = availableFemaleVoices.find(v => /zira/i.test(v.name)) || availableFemaleVoices[0];
-    currentFemaleVoice = defaultVoice;
+    // Prioritize Google UK English Female (in Chrome) or Microsoft Zira (in Edge/Windows)
+    let bestFemaleVoice = availableFemaleVoices.find(v => /google uk english female/i.test(v.name))
+                       || availableFemaleVoices.find(v => /zira/i.test(v.name))
+                       || availableFemaleVoices.find(v => /jenny|aria/i.test(v.name))
+                       || availableFemaleVoices[0];
+
+    currentFemaleVoice = bestFemaleVoice;
 
     if (voiceSelect) {
       voiceSelect.innerHTML = '';
       availableFemaleVoices.forEach(v => {
         const opt = document.createElement('option');
         opt.value = v.name;
-        const isZira = /zira/i.test(v.name);
         opt.textContent = `👩 ${v.name.replace('Desktop', '').replace('English (United States)', '').trim()}`;
-        if (v.name === defaultVoice.name) opt.selected = true;
+        if (v.name === bestFemaleVoice.name) opt.selected = true;
         voiceSelect.appendChild(opt);
       });
 
@@ -336,7 +337,7 @@ function initHanaChat() {
         const chosen = voices.find(v => v.name === voiceSelect.value);
         if (chosen) {
           currentFemaleVoice = chosen;
-          speakText(`Hana voice updated to ${chosen.name.split(' ')[1] || 'Female'}.`, true);
+          speakText(`Hana voice set to ${chosen.name.replace('Google', '').replace('Desktop', '').trim()}.`, true);
         }
       };
     }
@@ -344,20 +345,19 @@ function initHanaChat() {
 
   if (voiceTestBtn) {
     voiceTestBtn.addEventListener('click', () => {
-      speakText("Hello Nazma! I am Hana, speaking with my gentle female voice. How can I help you today?", true);
+      speakText("Hello Nazma! I am Hana, speaking with my gentle female voice. It is wonderful to connect with you!", true);
     });
   }
 
   if ('speechSynthesis' in window) {
     loadVoices();
     window.speechSynthesis.onvoiceschanged = loadVoices;
-    // Repeated polling for asynchronous Chromium voice initialization
     const pollTimer = setInterval(() => {
       if (window.speechSynthesis.getVoices().length > 0) {
         loadVoices();
         clearInterval(pollTimer);
       }
-    }, 200);
+    }, 150);
     setTimeout(() => clearInterval(pollTimer), 3000);
   }
 
@@ -365,28 +365,36 @@ function initHanaChat() {
     if ((!voiceEnabled && !forceSpeak) || !('speechSynthesis' in window)) return;
     
     window.speechSynthesis.cancel();
-    const clean = text.replace(/<[^>]*>?/gm, '');
+    const clean = text.replace(/<[^>]*>?/gm, '').trim();
+    if (!clean) return;
+
     const utterance = new SpeechSynthesisUtterance(clean);
-
     const allVoices = window.speechSynthesis.getVoices();
-    // Ensure we have the selected female voice
+
+    // 1. Check user choice from dropdown
+    let target = null;
     if (voiceSelect && voiceSelect.value) {
-      currentFemaleVoice = allVoices.find(v => v.name === voiceSelect.value) || currentFemaleVoice;
-    }
-    if (!currentFemaleVoice) {
-      currentFemaleVoice = allVoices.find(v => /zira|jenny|aria|samantha|female/i.test(v.name) && !/david|mark|male/i.test(v.name));
+      target = allVoices.find(v => v.name === voiceSelect.value);
     }
 
-    if (currentFemaleVoice) {
-      utterance.voice = currentFemaleVoice;
-      utterance.lang = currentFemaleVoice.lang || 'en-US';
+    // 2. Strict female selection fallback: never allow a male voice
+    if (!target || isMaleVoice(target.name)) {
+      target = allVoices.find(v => /google uk english female/i.test(v.name))
+            || allVoices.find(v => /zira/i.test(v.name))
+            || allVoices.find(v => /jenny|aria/i.test(v.name))
+            || allVoices.find(v => isFemaleVoice(v.name));
     }
 
-    // Feminine pitch and melodic cadence
+    if (target) {
+      utterance.voice = target;
+      utterance.lang = target.lang || 'en-GB';
+    }
+
+    // Feminine pitch setting: sweet and melodic tone
     utterance.pitch = 1.35;
     utterance.rate = 0.93;
 
-    // Prevent garbage collection cutoff in Chromium
+    // Retain global reference to avoid Chromium garbage collection bug
     window.__currentSpeech = utterance;
     window.speechSynthesis.speak(utterance);
   }
