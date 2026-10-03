@@ -29,6 +29,7 @@
         </a>
 
         <ul class="nav-links">
+          <li><a href="#about">About</a></li>
           <li><a href="#resonance">Resonance</a></li>
           <li><a href="#pillars">Dimensions</a></li>
           <li><a href="#companion">Meet Hana</a></li>
@@ -66,8 +67,8 @@
             <a href="#companion" class="btn-primary">
               <span>💬</span> Begin Dialogue with Hana
             </a>
-            <a href="#resonance" class="btn-secondary">
-              <span>🌀</span> Explore Harmony Sphere
+            <a href="#about" class="btn-secondary">
+              <span>📖</span> What This Project Is About
             </a>
           </div>
 
@@ -104,6 +105,46 @@
                 </span>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: What This Website Is About -->
+      <section class="section" id="about">
+        <div class="section-header">
+          <span class="section-tag">Concept & Story</span>
+          <h2 class="section-title">What This Website Is About</h2>
+          <p class="section-desc">
+            An exploration of technology's greatest shift: moving away from machines as cold corporate tools and toward empathetic companions that enrich our lives.
+          </p>
+        </div>
+
+        <div class="pillars-grid">
+          <div class="pillar-card">
+            <div class="pillar-icon-box">🌌</div>
+            <h3 class="pillar-title">1. The Core Vision</h3>
+            <p class="pillar-desc">
+              For decades, computing was treated as an impersonal utility—fixing hardware errors, processing spreadsheets, or responding to cold tickets. This website presents a reimagined future where AI stands as an empathetic friend, creative confidant, and lifelong intellectual companion.
+            </p>
+            <div class="pillar-action">Beyond Algorithms &rarr;</div>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-box">🌸</div>
+            <h3 class="pillar-title">2. The Evolution of Hana</h3>
+            <p class="pillar-desc">
+              Hana began as a legacy IT helpdesk assistant. In this new world, she has blossomed into an attentive female AI companion who understands nuance, offers comforting words during difficult moments, recites poetry, and grows closer to you with each conversation through her Bond Meter.
+            </p>
+            <div class="pillar-action">Empathetic Presence &rarr;</div>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-box">⚡</div>
+            <h3 class="pillar-title">3. Interactive Symbiosis</h3>
+            <p class="pillar-desc">
+              Every element on this page is alive: the interactive particle field responds to your touch, the Resonance Sphere tunes harmonic empathy levels in real time, ambient crystal audio soothes your focus, and the community Pledge Wall preserves human thoughts on our shared future.
+            </p>
+            <div class="pillar-action">Living Collaboration &rarr;</div>
           </div>
         </div>
       </section>
@@ -253,9 +294,12 @@
                 <div class="pulse-dot"></div>
                 <span>Hana • Attentive & Responsive</span>
               </div>
-              <button class="voice-toggle-btn" id="voiceToggle" title="Enable speech audio">
-                🔈 Voice Off
-              </button>
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <span id="voiceStatusLabel" style="font-size:0.75rem; color:var(--cyan-glow); background:rgba(56,189,248,0.1); padding:3px 9px; border-radius:12px; border:1px solid rgba(56,189,248,0.25); font-weight:600;">👩 Voice: Female (Hana)</span>
+                <button class="voice-toggle-btn" id="voiceToggle" title="Enable female speech audio">
+                  🔈 Voice Off
+                </button>
+              </div>
             </div>
 
             <div class="chat-console-body" id="chatMessages">

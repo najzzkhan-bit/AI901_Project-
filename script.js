@@ -287,13 +287,71 @@ function initHanaChat() {
     });
   }
 
+  let selectedFemaleVoice = null;
+
+  function loadVoices() {
+    if (!('speechSynthesis' in window)) return;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices || voices.length === 0) return;
+
+    // Prioritize prominent female voices across Windows, Chrome, Edge, and macOS
+    const femaleVoicePatterns = [
+      /zira/i,
+      /jenny/i,
+      /aria/i,
+      /samantha/i,
+      /victoria/i,
+      /karen/i,
+      /catherine/i,
+      /linda/i,
+      /eva/i,
+      /hazel/i,
+      /female/i,
+      /google.*female/i,
+      /google us english/i
+    ];
+
+    for (const pattern of femaleVoicePatterns) {
+      const match = voices.find(v => pattern.test(v.name) && (v.lang.startsWith('en') || !v.lang));
+      if (match) {
+        selectedFemaleVoice = match;
+        break;
+      }
+    }
+
+    // Fallback: any voice explicitly marked female or English female
+    if (!selectedFemaleVoice) {
+      selectedFemaleVoice = voices.find(v => v.lang.startsWith('en') && !/david|mark|george|male/i.test(v.name)) || voices[0];
+    }
+
+    const voiceStatus = document.getElementById('voiceStatusLabel');
+    if (voiceStatus && selectedFemaleVoice) {
+      voiceStatus.textContent = `Voice: Female (${selectedFemaleVoice.name.split(' ')[1] || 'Hana'})`;
+    }
+  }
+
+  if ('speechSynthesis' in window) {
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }
+
   function speakText(text) {
     if (!voiceEnabled || !('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     const clean = text.replace(/<[^>]*>?/gm, '');
     const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.05;
+
+    if (!selectedFemaleVoice) {
+      loadVoices();
+    }
+
+    if (selectedFemaleVoice) {
+      utterance.voice = selectedFemaleVoice;
+    }
+
+    // Feminine acoustic tuning: slightly higher pitch and warm soothing cadence
+    utterance.pitch = 1.25;
+    utterance.rate = 0.92;
     window.speechSynthesis.speak(utterance);
   }
 
