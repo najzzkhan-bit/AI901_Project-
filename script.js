@@ -278,80 +278,116 @@ function initHanaChat() {
   let bondXP = 45;
   let voiceEnabled = false;
 
+  const voiceSelect = document.getElementById('voiceSelect');
+  const voiceTestBtn = document.getElementById('voiceTestBtn');
+
   if (voiceToggle) {
     voiceToggle.addEventListener('click', () => {
       voiceEnabled = !voiceEnabled;
       voiceToggle.classList.toggle('active', voiceEnabled);
       voiceToggle.innerHTML = voiceEnabled ? '🔊 Voice On' : '🔈 Voice Off';
-      if (voiceEnabled) speakText("Voice synthesis enabled. I can speak with you now!");
+      if (voiceEnabled) {
+        speakText("Voice synthesis enabled. Hello Nazma, I am Hana. I can speak with you now!", true);
+      }
     });
   }
 
-  let selectedFemaleVoice = null;
+  let currentFemaleVoice = null;
+  let availableFemaleVoices = [];
 
   function loadVoices() {
     if (!('speechSynthesis' in window)) return;
     const voices = window.speechSynthesis.getVoices();
     if (!voices || voices.length === 0) return;
 
-    // Prioritize prominent female voices across Windows, Chrome, Edge, and macOS
-    const femaleVoicePatterns = [
-      /zira/i,
-      /jenny/i,
-      /aria/i,
-      /samantha/i,
-      /victoria/i,
-      /karen/i,
-      /catherine/i,
-      /linda/i,
-      /eva/i,
-      /hazel/i,
-      /female/i,
-      /google.*female/i,
-      /google us english/i
-    ];
+    // Filter and prioritize female voices
+    const femaleRegex = /zira|jenny|aria|samantha|victoria|karen|catherine|linda|eva|hazel|female|natural/i;
+    const maleRegex = /david|mark|george|male|guy|stefan|richard|paul|james/i;
 
-    for (const pattern of femaleVoicePatterns) {
-      const match = voices.find(v => pattern.test(v.name) && (v.lang.startsWith('en') || !v.lang));
-      if (match) {
-        selectedFemaleVoice = match;
-        break;
-      }
+    // First collect known female voices
+    availableFemaleVoices = voices.filter(v => femaleRegex.test(v.name) && !maleRegex.test(v.name));
+
+    // If none found with explicit female names, filter out known male voices
+    if (availableFemaleVoices.length === 0) {
+      availableFemaleVoices = voices.filter(v => !maleRegex.test(v.name));
     }
 
-    // Fallback: any voice explicitly marked female or English female
-    if (!selectedFemaleVoice) {
-      selectedFemaleVoice = voices.find(v => v.lang.startsWith('en') && !/david|mark|george|male/i.test(v.name)) || voices[0];
+    // Fallback to all voices if still empty
+    if (availableFemaleVoices.length === 0) {
+      availableFemaleVoices = voices;
     }
 
-    const voiceStatus = document.getElementById('voiceStatusLabel');
-    if (voiceStatus && selectedFemaleVoice) {
-      voiceStatus.textContent = `Voice: Female (${selectedFemaleVoice.name.split(' ')[1] || 'Hana'})`;
+    // Prefer Microsoft Zira Desktop specifically on Windows
+    let defaultVoice = availableFemaleVoices.find(v => /zira/i.test(v.name)) || availableFemaleVoices[0];
+    currentFemaleVoice = defaultVoice;
+
+    if (voiceSelect) {
+      voiceSelect.innerHTML = '';
+      availableFemaleVoices.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        const isZira = /zira/i.test(v.name);
+        opt.textContent = `👩 ${v.name.replace('Desktop', '').replace('English (United States)', '').trim()}`;
+        if (v.name === defaultVoice.name) opt.selected = true;
+        voiceSelect.appendChild(opt);
+      });
+
+      voiceSelect.onchange = () => {
+        const chosen = voices.find(v => v.name === voiceSelect.value);
+        if (chosen) {
+          currentFemaleVoice = chosen;
+          speakText(`Hana voice updated to ${chosen.name.split(' ')[1] || 'Female'}.`, true);
+        }
+      };
     }
+  }
+
+  if (voiceTestBtn) {
+    voiceTestBtn.addEventListener('click', () => {
+      speakText("Hello Nazma! I am Hana, speaking with my gentle female voice. How can I help you today?", true);
+    });
   }
 
   if ('speechSynthesis' in window) {
     loadVoices();
     window.speechSynthesis.onvoiceschanged = loadVoices;
+    // Repeated polling for asynchronous Chromium voice initialization
+    const pollTimer = setInterval(() => {
+      if (window.speechSynthesis.getVoices().length > 0) {
+        loadVoices();
+        clearInterval(pollTimer);
+      }
+    }, 200);
+    setTimeout(() => clearInterval(pollTimer), 3000);
   }
 
-  function speakText(text) {
-    if (!voiceEnabled || !('speechSynthesis' in window)) return;
+  function speakText(text, forceSpeak = false) {
+    if ((!voiceEnabled && !forceSpeak) || !('speechSynthesis' in window)) return;
+    
     window.speechSynthesis.cancel();
     const clean = text.replace(/<[^>]*>?/gm, '');
     const utterance = new SpeechSynthesisUtterance(clean);
 
-    if (!selectedFemaleVoice) {
-      loadVoices();
+    const allVoices = window.speechSynthesis.getVoices();
+    // Ensure we have the selected female voice
+    if (voiceSelect && voiceSelect.value) {
+      currentFemaleVoice = allVoices.find(v => v.name === voiceSelect.value) || currentFemaleVoice;
+    }
+    if (!currentFemaleVoice) {
+      currentFemaleVoice = allVoices.find(v => /zira|jenny|aria|samantha|female/i.test(v.name) && !/david|mark|male/i.test(v.name));
     }
 
-    if (selectedFemaleVoice) {
-      utterance.voice = selectedFemaleVoice;
+    if (currentFemaleVoice) {
+      utterance.voice = currentFemaleVoice;
+      utterance.lang = currentFemaleVoice.lang || 'en-US';
     }
 
-    // Feminine acoustic tuning: slightly higher pitch and warm soothing cadence
-    utterance.pitch = 1.25;
-    utterance.rate = 0.92;
+    // Feminine pitch and melodic cadence
+    utterance.pitch = 1.35;
+    utterance.rate = 0.93;
+
+    // Prevent garbage collection cutoff in Chromium
+    window.__currentSpeech = utterance;
     window.speechSynthesis.speak(utterance);
   }
 

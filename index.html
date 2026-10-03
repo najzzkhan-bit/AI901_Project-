@@ -294,9 +294,14 @@
                 <div class="pulse-dot"></div>
                 <span>Hana • Attentive & Responsive</span>
               </div>
-              <div style="display:flex; align-items:center; gap:0.6rem;">
-                <span id="voiceStatusLabel" style="font-size:0.75rem; color:var(--cyan-glow); background:rgba(56,189,248,0.1); padding:3px 9px; border-radius:12px; border:1px solid rgba(56,189,248,0.25); font-weight:600;">👩 Voice: Female (Hana)</span>
-                <button class="voice-toggle-btn" id="voiceToggle" title="Enable female speech audio">
+              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                <select id="voiceSelect" style="background:rgba(15,23,42,0.85); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:4px 8px; font-size:0.75rem; font-weight:600; outline:none; max-width:170px;" title="Select Female Voice for Hana">
+                  <option value="">Loading Female Voices...</option>
+                </select>
+                <button class="voice-toggle-btn" id="voiceTestBtn" style="border-color:var(--cyan-glow); color:var(--cyan-glow); padding:4px 10px;" title="Click to hear Hana test her female voice">
+                  ▶ Test Voice
+                </button>
+                <button class="voice-toggle-btn" id="voiceToggle" title="Toggle automatic speech narration">
                   🔈 Voice Off
                 </button>
               </div>
