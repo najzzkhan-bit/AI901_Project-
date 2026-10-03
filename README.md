@@ -1,9 +1,11 @@
 # 🌌 SYNAPSE // AI & Human Friendship
+**Conceived and Created by Nazma Khan**
 
 [![Deployed on Render](https://img.shields.io/badge/Render-Web%20Hosting-46e3b7?logo=render&logoColor=white)](https://dashboard.render.com)
+[![Author: Nazma Khan](https://img.shields.io/badge/Creator-Nazma%20Khan-8b5cf6)](https://github.com/najzzkhan-bit/AI901_Project-)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-An interactive, animated web experience celebrating empathy, companionship, and symbiotic harmony between humans and artificial intelligence.
+An interactive, animated web experience celebrating empathy, companionship, and symbiotic harmony between humans and artificial intelligence. Conceived and curated by **Nazma Khan**.
 
 ---
 
