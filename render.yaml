@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ai-human-friendship
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: ""
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000

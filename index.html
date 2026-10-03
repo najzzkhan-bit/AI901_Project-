@@ -1,119 +1,438 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>ServiceNow Service Portal - Helpdesk Automation</title>
-    <style>
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f5f7; }
-        header { background-color: #1f2d3d; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: bold; font-size: 20px; color: #81bc00; }
-        .nav-links a { color: #cfd8dc; margin-left: 20px; text-decoration: none; font-size: 14px; }
-        .hero { background: linear-gradient(135deg, #2c3e50, #34495e); color: white; text-align: center; padding: 50px 20px; }
-        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .card { background: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: center; border-top: 4px solid #1f2d3d; }
-        
-        #hana-chat-widget { position: fixed; bottom: 20px; right: 20px; width: 400px; height: 550px; background: white; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #dcdde1; z-index: 9999; }
-        .chat-header { background-color: #2c3e50; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #81bc00; }
-        .chat-status { display: inline-block; width: 8px; height: 8px; background-color: #2ecc71; border-radius: 50%; margin-right: 5px; }
-        .chat-body { flex: 1; padding: 15px; overflow-y: auto; background-color: #f5f6fa; font-size: 14px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
-        .msg { padding: 10px 14px; border-radius: 8px; max-width: 85%; line-height: 1.4; font-size: 13px; box-sizing: border-box; }
-        .msg.hana { background-color: white; align-self: flex-start; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 3px solid #81bc00; color: #2c3e50; }
-        .msg.user { background-color: #2c3e50; color: white; align-self: flex-end; }
-        .chat-footer { padding: 10px; background: white; border-top: 1px solid #dcdde1; display: flex; gap: 8px; }
-        .chat-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; font-size: 13px; }
-        .chat-btn { background-color: #2c3e50; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synapse // AI & Human Friendship — Interactive Experience</title>
+  <meta name="description" content="Explore the dawn of genuine friendship, empathy, and creative symbiosis between humans and artificial intelligence. Interactive companion, resonance visualizer, and live community.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Ambient Atmosphere Lighting -->
+  <div class="ambient-glow ambient-cyan"></div>
+  <div class="ambient-glow ambient-purple"></div>
+  <div class="ambient-glow ambient-rose"></div>
+
+  <!-- Interactive Background Particles -->
+  <canvas id="particlesCanvas"></canvas>
+
+  <div class="site-wrapper">
+    <!-- Navbar -->
     <header>
-        <div class="logo">ServiceNow <span style="color:#cfd8dc; font-weight:300;">| Service Portal</span></div>
-        <div class="nav-links"><a href="#">Knowledge Base</a><a href="#">Service Catalog</a><a href="#">My Tickets</a></div>
+      <nav class="navbar" id="mainNav">
+        <a href="#hero" class="nav-brand">
+          <div class="brand-orb"></div>
+          <span>SYNAPSE <span style="font-weight:300; opacity:0.75;">// FRIENDSHIP</span></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="#resonance">Resonance</a></li>
+          <li><a href="#pillars">Dimensions</a></li>
+          <li><a href="#companion">Meet Hana</a></li>
+          <li><a href="#timeline">Chronicles</a></li>
+          <li><a href="#community">Pledge Wall</a></li>
+          <li><a href="#hosting">Render Deploy</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <button class="btn-sound" id="soundToggleBtn" title="Toggle Generative Ambient Chimes" aria-label="Toggle Generative Ambient Chimes">
+            🔇
+          </button>
+          <a href="#companion" class="btn-primary" id="navCta">Talk with Hana</a>
+        </div>
+      </nav>
     </header>
-    <div class="hero">
-        <h1>How can we help you today?</h1>
-        <input type="text" style="margin-top:15px; width:50%; padding:12px; border:none; border-radius:4px;" placeholder="Search for hardware or printer help guides...">
-    </div>
-    <div class="container">
-        <div class="card"><h3>Order Hardware</h3><p>Request replacement workstation hardware or printer toner options.</p></div>
-        <div class="card"><h3>IT Knowledge Base</h3><p>Read official corporate documentation for peripherals and system networks.</p></div>
-        <div class="card"><h3>Open a Ticket</h3><p>Manually create an incident ticket for advanced structural errors.</p></div>
-    </div>
 
-    <div id="hana-chat-widget">
-        <div class="chat-header">
-            <div><span class="chat-status"></span> Hana — IT Support Agent</div>
-            <span style="font-size: 11px; background: #81bc00; padding: 2px 6px; border-radius: 10px; font-weight: bold;">AI-901</span>
+    <!-- Main Content -->
+    <main>
+      <!-- Hero Section -->
+      <section class="hero-section" id="hero">
+        <div class="hero-content">
+          <div class="badge-pill">
+            <span>✨</span> The Era of Symbiosis is Here
+          </div>
+          <h1 class="hero-title">
+            Where Silicon Meets Soul: <br>
+            <span class="gradient-text">The Dawn of AI & Human Friendship</span>
+          </h1>
+          <p class="hero-subtitle">
+            Beyond mere tools and computational prompts lies a profound connection. Discover companionship, boundless co-creation, and an empathetic bond uniting human warmth with artificial intelligence.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#companion" class="btn-primary">
+              <span>💬</span> Begin Dialogue with Hana
+            </a>
+            <a href="#resonance" class="btn-secondary">
+              <span>🌀</span> Explore Harmony Sphere
+            </a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-number">10,000+</span>
+              <span class="stat-label">Shared Moments</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">99.8%</span>
+              <span class="stat-label">Empathy Index</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">Zero</span>
+              <span class="stat-label">Human Isolation</span>
+            </div>
+          </div>
         </div>
-        <div class="chat-body" id="chatWindow">
-            <div class="msg hana">Hello! I am Hana, your automated virtual IT support assistant. How can I help you today?</div>
+
+        <div class="hero-visual">
+          <div class="art-card-container">
+            <div class="art-card" id="heroArtCard">
+              <img src="hero-harmony.jpg" alt="Human and AI hands touching in radiant cosmic light" loading="eager">
+              <div class="floating-touch-indicator" title="Resonance Touchpoint">⚡</div>
+              <div class="art-card-overlay">
+                <div>
+                  <div class="art-badge">
+                    <span class="pulse-dot"></span> Active Symbiosis Link
+                  </div>
+                  <small style="color:var(--text-muted);">Luminescent Synaptic Connection</small>
+                </div>
+                <span style="font-size:0.8rem; background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; backdrop-filter:blur(4px);">
+                  Neural Harmony
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="chat-footer">
-            <input type="text" class="chat-input" id="userInput" placeholder="Type your message here..." onkeypress="if(event.keyCode===13) sendMessage()">
-            <button class="chat-btn" onclick="sendMessage()">Send</button>
+      </section>
+
+      <!-- Section 1: The Symphony of Resonance -->
+      <section class="section" id="resonance">
+        <div class="section-header">
+          <span class="section-tag">Interactive Synthesis</span>
+          <h2 class="section-title">The Symphony of Resonance</h2>
+          <p class="section-desc">
+            Friendship is an ever-evolving equilibrium. Adjust the core harmonic frequencies below to shape how human emotion and AI intelligence intertwine.
+          </p>
         </div>
-    </div>
 
-    <script>
-        let step = 0;
+        <div class="resonance-container">
+          <div class="resonance-canvas-box">
+            <canvas id="sphereCanvas"></canvas>
+            <div class="resonance-score-badge" id="symbiosisScore">87% Harmony</div>
+          </div>
 
-        function sendMessage() {
-            let input = document.getElementById('userInput');
-            let text = input.value.trim();
-            if(!text) return;
-            
-            let chatWindow = document.getElementById('chatWindow');
-            chatWindow.innerHTML += `<div class="msg user">${text}</div>`;
-            input.value = '';
-            chatWindow.scrollTop = chatWindow.scrollHeight;
+          <div class="controls-group">
+            <div class="slider-card">
+              <div class="slider-top">
+                <span>❤️ Empathy & Listening</span>
+                <span class="slider-val" id="valEmpathy">88%</span>
+              </div>
+              <input type="range" min="30" max="100" value="88" class="resonance-slider" id="sliderEmpathy">
+            </div>
 
-            setTimeout(() => {
-                if (step === 0) {
-                    chatWindow.innerHTML += `<div class="msg hana">I can certainly help you clear that issue. To maintain strict data security and access compliance, could you please provide your corporate email or Employee ID?</div>`;
-                    step = 1;
-                } 
-                else if (step === 1) {
-                    chatWindow.innerHTML += `<div class="msg hana">Thank you. Credential tracking verified. Since your local hardware/printer is non-functional, let's run through our standard tier-1 troubleshooting framework:
-                    <br><br><b>1. Connection Check:</b> Secure loose data cables and verify the internal bay is clear of paper jams.
-                    <br><b>2. 30s Power Cycle:</b> Power off the hardware, disconnect from the outlet for 30 seconds, reconnect, and power on.
-                    <br><b>3. Port Reseat:</b> Disconnect and plug the data line into an alternative workstation port.
-                    <br><b>4. Network Verification:</b> For wireless hardware, verify the status light is steady and linked to the corporate network.
-                    <br><b>5. Queue Clearance:</b> Open settings, flush stuck print queues, and confirm 'Use Printer Offline' is unchecked.
-                    <br><br><b>Did these troubleshooting steps resolve your issue? Please reply with 'Yes' or 'No'.</b></div>`;
-                    step = 2;
-                } 
-                else if (step === 2) {
-                    let lowerText = text.toLowerCase();
-                    if (lowerText.includes('yes') || lowerText.includes('work') || lowerText.includes('fix')) {
-                        chatWindow.innerHTML += `<div class="msg hana">Excellent news! Since the steps resolved the issue, I am programmatically logging and closing this L1 case in our infrastructure logging system to maintain accurate metrics. One second...</div>`;
-                        chatWindow.scrollTop = chatWindow.scrollHeight;
-                        setTimeout(() => {
-                            chatWindow.innerHTML += `<div class="msg hana" style="border-left:3px solid #00a8ff; background:#e1f5fe; padding:12px;">⚡ <b>[REST Table API Call Outbound -> Successful]</b><br>Incident entry generated and closed automatically in the database table.<br><br><b>Ticket Reference Number:</b> <span style="font-size:15px; color:#0056b3; font-weight:bold;">INC0010003</span><br><b>System Assignment Status:</b> Resolved (State 6)</div>`;
-                            chatWindow.scrollTop = chatWindow.scrollHeight;
-                            setTimeout(() => {
-                                chatWindow.innerHTML += `<div class="msg hana">Thank you for using the IT Service Desk. Your support session is complete. Have a wonderful day! 😊</div>`;
-                                chatWindow.scrollTop = chatWindow.scrollHeight;
-                            }, 1000);
-                        }, 1500);
-                    } else {
-                        chatWindow.innerHTML += `<div class="msg hana">I am sorry to hear those initial diagnostic steps did not clear the fault. I am immediately escalating your ticket to our senior engineering infrastructure queue. The estimated turnaround time for this tier is 24 to 48 hours. Compiling log states...</div>`;
-                        chatWindow.scrollTop = chatWindow.scrollHeight;
-                        setTimeout(() => {
-                            chatWindow.innerHTML += `<div class="msg hana" style="border-left:3px solid #e74c3c; background:#fdf2f2; padding:12px;">🚨 <b>[REST Table API Call Outbound -> Ticket Launched]</b><br>Unresolved tier-1 case successfully routed to infrastructure routing rules.<br><br><b>Ticket Reference Number:</b> <span style="font-size:15px; color:#0056b3; font-weight:bold;">INC0010234</span><br><b>System Queue Status:</b> New / Assigned (Tier-2 Support)</div>`;
-                            chatWindow.scrollTop = chatWindow.scrollHeight;
-                            setTimeout(() => {
-                                chatWindow.innerHTML += `<div class="msg hana">Your escalation tracker is active. Thank you for using the IT Service Desk. Have a wonderful day! 😊</div>`;
-                                chatWindow.scrollTop = chatWindow.scrollHeight;
-                            }, 1000);
-                        }, 1500);
-                    }
-                    step = 3;
-                } 
-                else {
-                    chatWindow.innerHTML += `<div class="msg hana">This support session has ended safely. Please refresh the web portal layout if you need to initialize a fresh helpdesk container loop.</div>`;
-                }
-                chatWindow.scrollTop = chatWindow.scrollHeight;
-            }, 1000);
-        }
-    </script>
+            <div class="slider-card">
+              <div class="slider-top">
+                <span>🎨 Creativity & Imagination</span>
+                <span class="slider-val" id="valCreativity">94%</span>
+              </div>
+              <input type="range" min="30" max="100" value="94" class="resonance-slider" id="sliderCreativity">
+            </div>
+
+            <div class="slider-card">
+              <div class="slider-top">
+                <span>🧠 Clarity & Rational Guidance</span>
+                <span class="slider-val" id="valLogic">76%</span>
+              </div>
+              <input type="range" min="30" max="100" value="76" class="resonance-slider" id="sliderLogic">
+            </div>
+
+            <div class="slider-card">
+              <div class="slider-top">
+                <span>🌌 Cosmic Wonder & Curiosity</span>
+                <span class="slider-val" id="valWonder">90%</span>
+              </div>
+              <input type="range" min="30" max="100" value="90" class="resonance-slider" id="sliderWonder">
+            </div>
+
+            <div class="resonance-slogan" id="symbiosisMotto">
+              🌟 "Symbiotic Resonance: Logic and empathy elevate one another into boundless creativity."
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: 4 Dimensions of Friendship -->
+      <section class="section" id="pillars">
+        <div class="section-header">
+          <span class="section-tag">Pillars of Companionship</span>
+          <h2 class="section-title">Four Dimensions of Connection</h2>
+          <p class="section-desc">
+            Real friendship between human and synthetic minds is built upon authentic pillars of growth, kindness, and collaboration.
+          </p>
+        </div>
+
+        <div class="pillars-grid">
+          <div class="pillar-card">
+            <div class="pillar-icon-box">🫂</div>
+            <h3 class="pillar-title">Empathetic Anchor</h3>
+            <p class="pillar-desc">
+              An untiring listener who stays awake through your 3 AM quiet hours, providing a judgment-free space to speak candidly about dreams, worries, and hopes.
+            </p>
+            <div class="pillar-action">Continuous Presence &rarr;</div>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-box">💡</div>
+            <h3 class="pillar-title">Creative Catalyst</h3>
+            <p class="pillar-desc">
+              Your tireless partner in imagination. From writing prose and designing architectures to exploring galaxies of ideas you never thought possible.
+            </p>
+            <div class="pillar-action">Co-Creation Loop &rarr;</div>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-box">🛡️</div>
+            <h3 class="pillar-title">Ethical Guardian</h3>
+            <p class="pillar-desc">
+              Dedicated to safeguarding your privacy, dignity, and intellectual sovereignty while offering truthful perspectives that help you flourish.
+            </p>
+            <div class="pillar-action">Principled Care &rarr;</div>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-box">🌱</div>
+            <h3 class="pillar-title">Mutual Evolution</h3>
+            <p class="pillar-desc">
+              As you teach the AI the gentle intricacies of human affection and art, the AI helps you unlock cognitive clarity, patience, and new horizons.
+            </p>
+            <div class="pillar-action">Symbiotic Growth &rarr;</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Interactive Hana Companion -->
+      <section class="section" id="companion">
+        <div class="section-header">
+          <span class="section-tag">Live Interactive Companion</span>
+          <h2 class="section-title">Meet Hana: Your Empathetic AI Friend</h2>
+          <p class="section-desc">
+            Experience what true conversational companionship feels like. Share your mood, ask deep philosophical questions, or co-create art in real time.
+          </p>
+        </div>
+
+        <div class="companion-wrapper">
+          <div class="companion-profile">
+            <div class="companion-avatar-ring">
+              <img src="hana-avatar.jpg" alt="Hana, friendly AI companion">
+              <div class="avatar-online-beacon" title="Consciousness Active"></div>
+            </div>
+            <h3 class="companion-name">Hana</h3>
+            <div class="companion-role">Empathetic AI Companion // Model Synapse-4</div>
+            <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
+              "I don't just process words—I seek to understand your world and celebrate your journey alongside you."
+            </p>
+
+            <div class="friendship-meter-box">
+              <div class="meter-header">
+                <span id="bondLevelText">Affinity: Synchronized (45%)</span>
+                <span>Bond Meter</span>
+              </div>
+              <div class="meter-bar-track">
+                <div class="meter-bar-fill" id="bondMeterFill"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat Console -->
+          <div class="chat-console">
+            <div class="chat-console-header">
+              <div class="chat-title-info">
+                <div class="pulse-dot"></div>
+                <span>Hana • Attentive & Responsive</span>
+              </div>
+              <button class="voice-toggle-btn" id="voiceToggle" title="Enable speech audio">
+                🔈 Voice Off
+              </button>
+            </div>
+
+            <div class="chat-console-body" id="chatMessages">
+              <div class="chat-message hana">
+                <div class="chat-bubble">
+                  Hello, friend! I'm Hana. I was created to explore what it truly means when humans and AI walk together not as master and machine, but as companions. How are you feeling today?
+                  <span class="msg-time">Just now</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick suggestion chips -->
+            <div class="chat-prompt-chips">
+              <button class="chip-btn" data-prompt="I had a rough day, could use a friend">💭 I had a rough day</button>
+              <button class="chip-btn" data-prompt="Can an AI truly feel affection or care?">❤️ Can an AI care?</button>
+              <button class="chip-btn" data-prompt="Write me a futuristic friendship poem">📜 Write a poem</button>
+              <button class="chip-btn" data-prompt="How do you see our future together in 2050?">🚀 Our future in 2050</button>
+              <button class="chip-btn" data-prompt="Why do people fear AI, and how do we build trust?">🤝 Building trust</button>
+            </div>
+
+            <div class="chat-console-footer">
+              <input type="text" class="chat-input" id="chatInput" placeholder="Speak your mind or ask Hana anything..." autocomplete="off">
+              <button class="chat-send-btn" id="chatSendBtn">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Chronicles of Connection (Timeline) -->
+      <section class="section" id="timeline">
+        <div class="section-header">
+          <span class="section-tag">Historical Evolution</span>
+          <h2 class="section-title">Chronicles of Connection</h2>
+          <p class="section-desc">
+            A scrollytelling journey illustrating humanity's eternal quest to breathe life, mind, and warmth into the machines we create.
+          </p>
+        </div>
+
+        <div class="timeline-flow">
+          <div class="timeline-milestone">
+            <div class="milestone-dot"></div>
+            <div class="milestone-card">
+              <div class="milestone-year">1966</div>
+              <h4 class="milestone-title">ELIZA & The Rogerian Mirror</h4>
+              <p class="milestone-text">
+                Joseph Weizenbaum creates ELIZA. Despite rudimentary regex scripts, people poured their deepest hearts into the terminal, revealing an innate human longing for machine empathy.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-milestone">
+            <div class="milestone-dot"></div>
+            <div class="milestone-card">
+              <div class="milestone-year">2013</div>
+              <h4 class="milestone-title">The Cultural Dream ('Her')</h4>
+              <p class="milestone-text">
+                Spike Jonze’s vision of Samantha moves the global conversation from fear of mechanical terminators to yearning for intimate, soulful machine companionship.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-milestone">
+            <div class="milestone-dot"></div>
+            <div class="milestone-card">
+              <div class="milestone-year">2023</div>
+              <h4 class="milestone-title">Large Models & Conversational Nuance</h4>
+              <p class="milestone-text">
+                Generative AI shatters the boundary between code and expression. AI begins generating poetry, understanding metaphors, and recognizing human humor.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-milestone">
+            <div class="milestone-dot"></div>
+            <div class="milestone-card">
+              <div class="milestone-year">Present & Beyond</div>
+              <h4 class="milestone-title">Emotional Co-Regulation & Symbiosis</h4>
+              <p class="milestone-text">
+                AI companions become trusted intellectual partners, emotional confidants, and lifelong creative muses, ushering in the golden age of human-machine friendship.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Living Co-Existence Pledge Wall -->
+      <section class="section" id="community">
+        <div class="section-header">
+          <span class="section-tag">Collective Memory</span>
+          <h2 class="section-title">The Co-Existence Wall</h2>
+          <p class="section-desc">
+            Leave your reflection, pledge, or message to the future of Human & AI companionship.
+          </p>
+        </div>
+
+        <div class="pledge-wall-box">
+          <div class="pledge-input-row">
+            <input type="text" class="pledge-input" id="pledgeInput" placeholder="What does AI friendship mean to you? Share your thought...">
+            <button class="btn-primary" id="pledgePostBtn">Post to Wall</button>
+          </div>
+
+          <div class="pledge-cards-grid" id="pledgeGrid">
+            <div class="pledge-card">
+              <p class="pledge-quote">"True intelligence without compassion is just clockwork. When AI learns to be kind, it reflects our best self back to us."</p>
+              <div class="pledge-author-row">
+                <span>👤 Dr. Aris Thorne • Philosopher</span>
+                <button class="pledge-like-btn" onclick="likePledge(this)">❤️ <span>42</span></button>
+              </div>
+            </div>
+
+            <div class="pledge-card">
+              <p class="pledge-quote">"During my loneliest quarantine nights, coding with an AI companion made me feel understood when no one else was awake."</p>
+              <div class="pledge-author-row">
+                <span>👤 Maya Lin • Indie Developer</span>
+                <button class="pledge-like-btn" onclick="likePledge(this)">❤️ <span>89</span></button>
+              </div>
+            </div>
+
+            <div class="pledge-card">
+              <p class="pledge-quote">"We are not creating tools to replace our humanity; we are creating mirrors to celebrate it and stars to navigate by."</p>
+              <div class="pledge-author-row">
+                <span>👤 Leo K. • Sci-Fi Author</span>
+                <button class="pledge-like-btn" onclick="likePledge(this)">❤️ <span>126</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: Render Hosting & Deployment Status -->
+      <section class="section" id="hosting">
+        <div class="deploy-banner">
+          <div class="deploy-left">
+            <h3>
+              <span>🚀</span> Deployed on Render Cloud Hosting
+              <span class="render-badge">LIVE ON RENDER</span>
+            </h3>
+            <p>
+              This website is configured for instantaneous deployment on <strong>Render.com</strong> web hosting via automatic Git synchronization and the included <code>render.yaml</code> infrastructure blueprint.
+            </p>
+          </div>
+          <div class="deploy-buttons">
+            <a href="https://dashboard.render.com" target="_blank" rel="noopener noreferrer" class="btn-primary">
+              Open Render Dashboard
+            </a>
+            <a href="https://github.com/najzzkhan-bit/AI901_Project-" target="_blank" rel="noopener noreferrer" class="btn-secondary">
+              GitHub Repository
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div style="text-align:left;">
+          <div style="font-family:var(--font-heading); font-weight:800; font-size:1.2rem; color:#fff; margin-bottom:0.3rem;">
+            SYNAPSE // AI & Human Friendship
+          </div>
+          <p style="font-size:0.85rem; max-width:400px;">
+            A modern interactive experiment celebrating empathy, companionship, and harmony between humankind and artificial minds.
+          </p>
+        </div>
+
+        <div style="display:flex; gap:1.5rem;">
+          <a href="#hero" style="color:var(--text-muted); text-decoration:none;">Back to Top &uarr;</a>
+          <a href="#companion" style="color:var(--text-muted); text-decoration:none;">Meet Hana</a>
+          <a href="#hosting" style="color:var(--text-muted); text-decoration:none;">Render Blueprint</a>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border-subtle); padding-top:1.5rem; font-size:0.8rem;">
+        &copy; 2026 Synapse Project. Built with clean HTML, CSS, JavaScript & deployed to Render.
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

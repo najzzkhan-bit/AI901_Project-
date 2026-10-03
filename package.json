@@ -1,0 +1,23 @@
+{
+  "name": "ai-human-friendship",
+  "version": "1.0.0",
+  "description": "Interactive and animated website exploring the harmony and friendship between humans and AI, ready for Render deployment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node server.js --test"
+  },
+  "keywords": [
+    "ai",
+    "friendship",
+    "interactive",
+    "animation",
+    "render",
+    "web-hosting"
+  ],
+  "author": "Synapse Project",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
