@@ -134,12 +134,12 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  const parsedUrl = url.parse(req.url, true);
+  const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname;
 
   // API Route: Live Web Search (/api/search?q=...)
   if (pathname === '/api/search' && req.method === 'GET') {
-    const query = parsedUrl.query.q || '';
+    const query = parsedUrl.searchParams.get('q') || '';
     if (!query) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Search query parameter (q) is required' }));
