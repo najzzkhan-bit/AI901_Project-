@@ -1,17 +1,20 @@
 {
-  "name": "ai-human-friendship",
-  "version": "1.0.0",
-  "description": "Interactive and animated website exploring the harmony and friendship between humans and AI, ready for Render deployment",
+  "name": "ai-syntheticapulse",
+  "version": "2.0.0",
+  "description": "AI SyntheticaPulse: Next-Gen Autonomous Agentic Ecosystem, Relational Intelligence & ServiceNow IT Support Portal",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node server.js --test"
+    "test": "node -c server.js"
   },
   "keywords": [
     "ai",
-    "friendship",
+    "agentic-ecosystem",
+    "autonomous-agents",
+    "servicenow",
+    "it-support",
     "interactive",
-    "animation",
+    "voice-ai",
     "render",
     "web-hosting"
   ],

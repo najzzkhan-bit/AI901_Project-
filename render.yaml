@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: ai-human-friendship
+    name: ai-syntheticapulse
     runtime: node
     plan: free
     region: oregon
