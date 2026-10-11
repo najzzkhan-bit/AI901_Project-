@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ServiceNow Service Portal - Helpdesk Automation</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f5f7; }
+        header { background-color: #1f2d3d; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: bold; font-size: 20px; color: #81bc00; }
+        .nav-links a { color: #cfd8dc; margin-left: 20px; text-decoration: none; font-size: 14px; }
+        .hero { background: linear-gradient(135deg, #2c3e50, #34495e); color: white; text-align: center; padding: 50px 20px; }
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .card { background: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: center; border-top: 4px solid #1f2d3d; }
+        
+        #hana-chat-widget { position: fixed; bottom: 20px; right: 20px; width: 400px; height: 550px; background: white; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #dcdde1; z-index: 9999; }
+        .chat-header { background-color: #2c3e50; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #81bc00; }
+        .chat-status { display: inline-block; width: 8px; height: 8px; background-color: #2ecc71; border-radius: 50%; margin-right: 5px; }
+        .chat-body { flex: 1; padding: 15px; overflow-y: auto; background-color: #f5f6fa; font-size: 14px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+        .msg { padding: 10px 14px; border-radius: 8px; max-width: 85%; line-height: 1.4; font-size: 13px; box-sizing: border-box; }
+        .msg.hana { background-color: white; align-self: flex-start; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 3px solid #81bc00; color: #2c3e50; }
+        .msg.user { background-color: #2c3e50; color: white; align-self: flex-end; }
+        .chat-footer { padding: 10px; background: white; border-top: 1px solid #dcdde1; display: flex; gap: 8px; }
+        .chat-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; font-size: 13px; }
+        .chat-btn { background-color: #2c3e50; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">ServiceNow <span style="color:#cfd8dc; font-weight:300;">| Service Portal</span></div>
+        <div class="nav-links"><a href="#">Knowledge Base</a><a href="#">Service Catalog</a><a href="#">My Tickets</a></div>
+    </header>
+    <div class="hero">
+        <h1>How can we help you today?</h1>
+        <input type="text" style="margin-top:15px; width:50%; padding:12px; border:none; border-radius:4px;" placeholder="Search for hardware or printer help guides...">
+    </div>
+    <div class="container">
+        <div class="card"><h3>Order Hardware</h3><p>Request replacement workstation hardware or printer toner options.</p></div>
+        <div class="card"><h3>IT Knowledge Base</h3><p>Read official corporate documentation for peripherals and system networks.</p></div>
+        <div class="card"><h3>Open a Ticket</h3><p>Manually create an incident ticket for advanced structural errors.</p></div>
+    </div>
+
+    <div id="hana-chat-widget">
+        <div class="chat-header">
+            <div><span class="chat-status"></span> Hana — IT Support Agent</div>
+            <span style="font-size: 11px; background: #81bc00; padding: 2px 6px; border-radius: 10px; font-weight: bold;">AI-901</span>
+        </div>
+        <div class="chat-body" id="chatWindow">
+            <div class="msg hana">Hello! I am Hana, your automated virtual IT support assistant. How can I help you today?</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" class="chat-input" id="userInput" placeholder="Type your message here..." onkeypress="if(event.keyCode===13) sendMessage()">
+            <button class="chat-btn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let step = 0;
+
+        function sendMessage() {
+            let input = document.getElementById('userInput');
+            let text = input.value.trim();
+            if(!text) return;
+            
+            let chatWindow = document.getElementById('chatWindow');
+            chatWindow.innerHTML += `<div class="msg user">${text}</div>`;
+            input.value = '';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            setTimeout(() => {
+                if (step === 0) {
+                    chatWindow.innerHTML += `<div class="msg hana">I can certainly help you clear that issue. To maintain strict data security and access compliance, could you please provide your corporate email or Employee ID?</div>`;
+                    step = 1;
+                } 
+                else if (step === 1) {
+                    chatWindow.innerHTML += `<div class="msg hana">Thank you. Credential tracking verified. Since your local hardware/printer is non-functional, let's run through our standard tier-1 troubleshooting framework:
+                    <br><br><b>1. Connection Check:</b> Secure loose data cables and verify the internal bay is clear of paper jams.
+                    <br><b>2. 30s Power Cycle:</b> Power off the hardware, disconnect from the outlet for 30 seconds, reconnect, and power on.
+                    <br><b>3. Port Reseat:</b> Disconnect and plug the data line into an alternative workstation port.
+                    <br><b>4. Network Verification:</b> For wireless hardware, verify the status light is steady and linked to the corporate network.
+                    <br><b>5. Queue Clearance:</b> Open settings, flush stuck print queues, and confirm 'Use Printer Offline' is unchecked.
+                    <br><br><b>Did these troubleshooting steps resolve your issue? Please reply with 'Yes' or 'No'.</b></div>`;
+                    step = 2;
+                } 
+                else if (step === 2) {
+                    let lowerText = text.toLowerCase();
+                    if (lowerText.includes('yes') || lowerText.includes('work') || lowerText.includes('fix')) {
+                        chatWindow.innerHTML += `<div class="msg hana">Excellent news! Since the steps resolved the issue, I am programmatically logging and closing this L1 case in our infrastructure logging system to maintain accurate metrics. One second...</div>`;
+                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                        setTimeout(() => {
+                            chatWindow.innerHTML += `<div class="msg hana" style="border-left:3px solid #00a8ff; background:#e1f5fe; padding:12px;">⚡ <b>[REST Table API Call Outbound -> Successful]</b><br>Incident entry generated and closed automatically in the database table.<br><br><b>Ticket Reference Number:</b> <span style="font-size:15px; color:#0056b3; font-weight:bold;">INC0010003</span><br><b>System Assignment Status:</b> Resolved (State 6)</div>`;
+                            chatWindow.scrollTop = chatWindow.scrollHeight;
+                            setTimeout(() => {
+                                chatWindow.innerHTML += `<div class="msg hana">Thank you for using the IT Service Desk. Your support session is complete. Have a wonderful day! 😊</div>`;
+                                chatWindow.scrollTop = chatWindow.scrollHeight;
+                            }, 1000);
+                        }, 1500);
+                    } else {
+                        chatWindow.innerHTML += `<div class="msg hana">I am sorry to hear those initial diagnostic steps did not clear the fault. I am immediately escalating your ticket to our senior engineering infrastructure queue. The estimated turnaround time for this tier is 24 to 48 hours. Compiling log states...</div>`;
+                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                        setTimeout(() => {
+                            chatWindow.innerHTML += `<div class="msg hana" style="border-left:3px solid #e74c3c; background:#fdf2f2; padding:12px;">🚨 <b>[REST Table API Call Outbound -> Ticket Launched]</b><br>Unresolved tier-1 case successfully routed to infrastructure routing rules.<br><br><b>Ticket Reference Number:</b> <span style="font-size:15px; color:#0056b3; font-weight:bold;">INC0010234</span><br><b>System Queue Status:</b> New / Assigned (Tier-2 Support)</div>`;
+                            chatWindow.scrollTop = chatWindow.scrollHeight;
+                            setTimeout(() => {
+                                chatWindow.innerHTML += `<div class="msg hana">Your escalation tracker is active. Thank you for using the IT Service Desk. Have a wonderful day! 😊</div>`;
+                                chatWindow.scrollTop = chatWindow.scrollHeight;
+                            }, 1000);
+                        }, 1500);
+                    }
+                    step = 3;
+                } 
+                else {
+                    chatWindow.innerHTML += `<div class="msg hana">This support session has ended safely. Please refresh the web portal layout if you need to initialize a fresh helpdesk container loop.</div>`;
+                }
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
